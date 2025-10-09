@@ -8,6 +8,8 @@ public class JavasocketchatApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(JavasocketchatApplication.class, args);
-	}
 
+	}
 }
+
+//121312
