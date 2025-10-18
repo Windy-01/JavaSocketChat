@@ -20,12 +20,10 @@
 <body>
     <h2>表单提交结果</h2>
     
-    <div class="success" th:text="${message}"></div>
-    
     <div class="user-info">
         <h3>您提交的信息：</h3>
-        <div class="info"><strong>账号:</strong> <span th:text="${user.userid}"></span></div>
-        <div class="info"><strong>密码:</strong> <span th:text="${user.password}"></span></div>
+        <div class="info"><strong>账号:</strong> <span th:text="${userid}"></span></div>
+        <div class="info"><strong>密码:</strong> <span th:text="${password}"></span></div>
     </div>
     
     <a th:href="@{/form}" class="back-btn">返回表单</a>

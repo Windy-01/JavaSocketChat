@@ -10,7 +10,7 @@ import org.springframework.ui.Model;
 public class LoginPage {
     @GetMapping("/login")
     public String login(Model model){
-        model.addAttribute("userForm", new UserInfo());
+        model.addAttribute("userInfo", new UserInfo());
         return "LoginPage";
     }
 
@@ -21,6 +21,6 @@ public class LoginPage {
         model.addAttribute("password", userInfo.getPassword());
         System.out.println(userInfo.getUserid());
         System.out.println(userInfo.getPassword());
-        return "redirect:/login";
+        return "Loginsubmit";
     }
 }
