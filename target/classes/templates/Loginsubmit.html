@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>提交结果</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .success { color: green; font-weight: bold; }
+        .info { margin: 10px 0; }
+        .back-btn { 
+            background-color: #008CBA; 
+            color: white; 
+            padding: 10px 20px; 
+            text-decoration: none; 
+            display: inline-block; 
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h2>表单提交结果</h2>
+    
+    <div class="user-info">
+        <h3>您提交的信息：</h3>
+        <div class="info"><strong>账号:</strong> <span th:text="${userid}"></span></div>
+        <div class="info"><strong>密码:</strong> <span th:text="${password}"></span></div>
+    </div>
+    
+    <a th:href="@{/form}" class="back-btn">返回表单</a>
+</body>
+</html>
