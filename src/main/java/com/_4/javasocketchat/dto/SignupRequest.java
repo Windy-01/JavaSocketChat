@@ -3,6 +3,7 @@ package com._4.javasocketchat.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SignupRequest{
+    @JsonProperty("name")//这里前端要改()
     private String userName;
     @JsonProperty("username")
     private String userAccount;

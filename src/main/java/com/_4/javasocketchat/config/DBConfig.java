@@ -23,7 +23,7 @@ public class DBConfig {
         config.setMaxLifetime( hikariProperties.getMaxLifetime() );
         
         HikariDataSource dataSource = new HikariDataSource(config);
-        System.err.println("HikariDB连接池成功建立");
+        System.out.println("HikariDB连接池成功建立");
         return dataSource;
     }
     

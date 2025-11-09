@@ -29,15 +29,15 @@ public class WebConfig implements WebMvcConfigurer {
             .csrf(csrf -> csrf.disable()) // 如果是用 session + 表单登录，生产环境请启用并在表单中加入CSRF token
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers(
-                    "/login", "/home", "/", "/api/signin", "/api/signup"
+                    "/api/**"
                 ).permitAll()
                 .anyRequest().authenticated()
             )
-            .httpBasic(Customizer.withDefaults())
-            .formLogin(form -> form
-                .loginPage("/login") // 如果你有自定义登录页面
-                .permitAll()
-            );
+            .httpBasic(Customizer.withDefaults());
+            // .formLogin(form -> form
+            //     .loginPage("/login") // 如果你有自定义登录页面
+            //     .permitAll()
+            // );
 
         return http.build();
     }

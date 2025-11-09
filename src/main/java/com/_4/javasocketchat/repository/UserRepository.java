@@ -11,7 +11,7 @@ import com.zaxxer.hikari.HikariDataSource;
 
 @Repository
 public class UserRepository {
-    private HikariDataSource dataSource;
+    private final HikariDataSource dataSource;
 
     public UserRepository(HikariDataSource dataSource) {
         this.dataSource = dataSource;
