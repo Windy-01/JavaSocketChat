@@ -3,7 +3,9 @@ package com._4.javasocketchat.controller;
 import com._4.javasocketchat.dto.*;
 import com._4.javasocketchat.service.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
@@ -53,14 +55,46 @@ public class ApiResponse {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/home")
+    @PostMapping("/profile/set")
+    public ResponseEntity<?> setProfile(@RequestBody Profile profile){
+        return ResponseEntity.ok(null);
+    }
+
+    @GetMapping("/profile")
     public ResponseEntity<?> homeRequest(){
         return ResponseEntity.ok(null);
     }
 
-    @GetMapping("/home/{uid}")
+    @GetMapping("/profile/get/{uid}")
     public ResponseEntity<?> visRequest(){
         //return ResponseEntity.ok(null);
         return ResponseEntity.status(404).build();
+    }
+
+    @GetMapping("/friendlists")
+    public ResponseEntity<?> listsRequest(){
+        Map<String, List<?>> Lists = new HashMap<>();
+        List<UserProfile> friends = new ArrayList<>();
+        List<GroupProfile> groups = new ArrayList<>();
+        Lists.put("friends", friends);
+        Lists.put("groups", groups);
+
+        UserProfile user1 = new UserProfile();
+        user1.setId(114514);
+        user1.setName("114514");
+        user1.setLastMessage("Hello there!");
+        friends.add(user1);
+        UserProfile user2 = new UserProfile();
+        user2.setId(798456);
+        user2.setName("798456");
+        user2.setLastMessage("Hello there!");
+        friends.add(user2);
+        GroupProfile group1 = new GroupProfile();
+        group1.setId(123456);
+        group1.setName("TestGroup");
+        group1.setLastMessage("Welcome to Group A!");
+        groups.add(group1);
+
+        return ResponseEntity.ok(Lists);
     }
 }

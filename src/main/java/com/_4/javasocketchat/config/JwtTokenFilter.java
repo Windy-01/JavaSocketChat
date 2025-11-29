@@ -1,12 +1,14 @@
 package com._4.javasocketchat.config;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.util.AntPathMatcher;
 
 import com._4.javasocketchat.service.JwtTokenService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,45 +20,44 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
 public class JwtTokenFilter extends OncePerRequestFilter{
+    private final AntPathMatcher pathMatcher = new AntPathMatcher();
     private final JwtTokenService jwtTokenService;
 
     public JwtTokenFilter(JwtTokenService jwtTokenService){
         this.jwtTokenService = jwtTokenService;
     }
 
-    // private static final String[] WHITELIST_URLs = {
-    //     "/api/signup",
-    //     "/api/signin"
-    // };
+    private static final String[] WHITELIST_URLs = {
+        "/api/signup",
+        "/api/signin",
+        "/ws/**"
+    };
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, 
                                     HttpServletResponse response, 
-                                    FilterChain filterChain) throws ServletException, java.io.IOException{
+                                    FilterChain filterChain) throws ServletException, IOException{
         String url = request.getRequestURI();
-        System.out.println(url);
-        if(url.equals("/api/signin") || url.equals("/api/signup")){
-            System.out.println("白名单放行");
+        // System.out.println("token:" + getToken(request));
+        if( Arrays.stream(WHITELIST_URLs).anyMatch(turl -> pathMatcher.match(turl, url)) ) {
+            //System.out.println("白名单放行");
             filterChain.doFilter(request, response);
             return;
         }
-        System.out.println("进行token认证");
-        String token = getToken(request);
+        System.out.println(url+"进行token认证");
+        String token = jwtTokenService.getToken( request.getHeader("authorization") );
         if(token!=null && jwtTokenService.validateToken(token)){
-            System.out.println("token认证成功");
+            // Cookie cookie = new Cookie("token", token);
+            // cookie.setHttpOnly(true);
+            // cookie.setPath("/");
+            // response.addCookie(cookie);
+            // System.out.println("token认证成功");
+            // SecurityContextHolder.getContext().setAuthentication( jwtTokenService.authentication(token) );
             filterChain.doFilter(request, response);
         }else{
-            System.out.println("token认证失败");
+            //System.out.println("token认证失败");
             sendErrorResponse(response, 401, "token认证失败");
         }
-    }
-
-    private String getToken(HttpServletRequest request){
-        String authorization = request.getHeader("authorization");
-        if(authorization != null && authorization.startsWith("Bearer ")){
-            return authorization.substring(7);
-        }
-        return null;
     }
 
     // private boolean isWhite(String url){
