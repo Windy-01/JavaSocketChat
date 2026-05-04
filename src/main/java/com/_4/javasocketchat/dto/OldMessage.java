@@ -2,14 +2,14 @@ package com._4.javasocketchat.dto;
 
 import java.util.Date;
 
-public class ChatMessage {
+public class OldMessage {
     private String sender;
     private String receiver;
     private long timestamp;
     private String content;
     private String type;
 
-    public ChatMessage() {
+    public OldMessage() {
         Date date = new Date();
         timestamp = date.getTime();
     }
@@ -40,8 +40,8 @@ public class ChatMessage {
             return this;
         }
 
-        public ChatMessage build() {
-            ChatMessage chatMessage = new ChatMessage();
+        public OldMessage build() {
+            OldMessage chatMessage = new OldMessage();
             chatMessage.sender = this.sender;
             chatMessage.receiver = this.receiver;
             chatMessage.content = this.content;

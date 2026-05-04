@@ -17,6 +17,9 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 
 import com._4.javasocketchat.service.JwtTokenService;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
@@ -54,14 +57,14 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 
                 if (StompCommand.CONNECT.equals(accessor.getCommand())) {
                     String token = jwtTokenService.getToken(accessor.getFirstNativeHeader("Authorization"));
-                    System.out.println("Received token: " + token);
+                    log.info("Received token: " + token);
                     
                     Authentication authentication = jwtTokenService.authentication(token);
                     accessor.setUser(authentication);
                     SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                    System.out.println("STOMP CONNECT 认证成功: " + authentication.getName());
-                    System.out.println(
+                    log.info(
+                        "STOMP CONNECT 认证成功: " + authentication.getName() + "\n" +
                         ">>> 收到 STOMP 帧: " + accessor.getCommand() +
                         " | sessionId=" + accessor.getSessionId() +
                         " | user=" + accessor.getUser()

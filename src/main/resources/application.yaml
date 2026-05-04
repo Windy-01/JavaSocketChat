@@ -1,0 +1,71 @@
+server:
+  port: ${SERVER_PORT}
+  ssl: 
+    enabled: true
+    key-store: classpath:ZeroSSL/keystore.p12
+    key-store-password: 123456
+    key-store-type: PKCS12
+
+#未使用
+cros:
+  allowed-origins:
+    - http://localhost:5500
+
+spring:
+  application:
+    name: javachat
+
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: ${GITHUB_JAVACHAT_ID}
+            client-secret: ${GITHUB_JAVACHAT_SECRET}
+            redirect-uri: ${REDIRECT_URI}
+            # 授权范围
+            scope: read:user, user:email
+
+  # HikariDataSource连接池配置
+  datasource:
+    # 数据库连接配置
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:javachat}?${DB_PARAMETERS:useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # 连接池配置
+    maximum-pool-size: 20
+    minimum-idle: 5
+    connection-timeout: 30000
+    idle-timeout: 600000
+    max-lifetime: 1800000
+
+  data:
+  # Redis
+    redis:
+      host: ${REDIS_HOST:127.0.0.1}
+      port: ${REDIS_PORT:6379}
+      username: ${REDIS_USERNAME}
+      password: ${REDIS_PASSWORD}
+      database: ${REDIS_DATABASE:0}
+      timeout: 3000ms
+      lettuce:
+        pool:
+         enabled: true
+
+
+  # RabbitMQ
+  rabbitmq:
+    host: ${MQ_HOST:localhost}
+    port: ${MQ_PORT:5672}
+    username: ${MQ_USERNAME:guest}
+    password: ${MQ_PASSWORD:guest}
+    # 可选配置
+    # virtual-host: /
+    # connection-timeout: 5000
+    publisher-confirms: true        # 开启发布者确认
+    publisher-returns: true         # 开启消息返回
+    listener:
+      simple:
+        acknowledge-mode: manual    # 手动确认
+        prefetch: 1                 # 每次预取一条消息

@@ -9,28 +9,33 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import com._4.javasocketchat.mapper.UserMapper;
+
 import io.jsonwebtoken.Jwts;
 
 @Service
 public class JwtTokenService {
+    private final UserMapper userMapper;
     private final Key secretKey;
     //private final Key publicKey;
     //private final Key privateKey;
 
-    public JwtTokenService(Key secretKey){
+    public JwtTokenService(UserMapper userMapper, Key secretKey) {
+        this.userMapper = userMapper;
         this.secretKey = secretKey;
         //this.privateKey = privateKey;
         //this.publicKey = publicKey;
     }
 
-    public String createToken(String userAccount){
+    public String createTokenByUsername(String userAccount){
         Date iat = new Date();
         Date exp = new Date(iat.getTime() + 1000*60*60*20);
+        int userId = userMapper.getID(userAccount);
         String jwt =  Jwts.builder()
                         .setHeaderParam("typ", "JWT")
                         .setIssuer("Server")
                         .setAudience("ChatServer")
-                        .setSubject(userAccount)
+                        .setSubject(String.valueOf(userId))
                         .setIssuedAt(iat)
                         .setExpiration(exp)
                         //.setId("zxcvb")

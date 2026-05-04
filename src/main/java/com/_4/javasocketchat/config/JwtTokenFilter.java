@@ -17,7 +17,9 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Configuration
 public class JwtTokenFilter extends OncePerRequestFilter{
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
@@ -30,7 +32,9 @@ public class JwtTokenFilter extends OncePerRequestFilter{
     private static final String[] WHITELIST_URLs = {
         "/api/signup",
         "/api/signin",
-        "/ws/**"
+        "/ws/**",
+        "/swagger-ui/**",
+        "/v3/api-docs/**"
     };
 
     @Override
@@ -38,31 +42,30 @@ public class JwtTokenFilter extends OncePerRequestFilter{
                                     HttpServletResponse response, 
                                     FilterChain filterChain) throws ServletException, IOException{
         String url = request.getRequestURI();
-        // System.out.println("token:" + getToken(request));
-        if( Arrays.stream(WHITELIST_URLs).anyMatch(turl -> pathMatcher.match(turl, url)) ) {
-            //System.out.println("白名单放行");
+        // log.info("token:" + getToken(request));
+        if( // 预检放行
+            "OPTIONS".equalsIgnoreCase(request.getMethod()) ||
+            // 白名单放行
+            Arrays.stream(WHITELIST_URLs).anyMatch(turl -> pathMatcher.match(turl, url))
+            ) {
             filterChain.doFilter(request, response);
             return;
         }
-        System.out.println(url+"进行token认证");
         String token = jwtTokenService.getToken( request.getHeader("authorization") );
+        log.info(url + "进行token认证:");
         if(token!=null && jwtTokenService.validateToken(token)){
             // Cookie cookie = new Cookie("token", token);
             // cookie.setHttpOnly(true);
             // cookie.setPath("/");
             // response.addCookie(cookie);
-            // System.out.println("token认证成功");
+            // log.info("token认证成功");
             // SecurityContextHolder.getContext().setAuthentication( jwtTokenService.authentication(token) );
             filterChain.doFilter(request, response);
         }else{
-            //System.out.println("token认证失败");
+            //log.error("token认证失败");
             sendErrorResponse(response, 401, "token认证失败");
         }
     }
-
-    // private boolean isWhite(String url){
-    //     return false;
-    // }
 
     private void sendErrorResponse(HttpServletResponse response, int status, String message) throws IOException {
         response.setStatus(status);

@@ -11,6 +11,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOriginPatterns("*")
+                .allowedOrigins(
+                    "http://localhost:5500",
+                    "https://ais-dev-6kxdvnlmmfomykhhcio24c-636080456796.asia-east1.run.app"
+                    )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH")
                 .allowedHeaders("*")
                 .allowCredentials(true)

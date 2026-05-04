@@ -1,61 +1,66 @@
 package com._4.javasocketchat.repository;
 
-import com._4.javasocketchat.dto.*;
-import com._4.javasocketchat.entity.*;
+import java.util.List;
 
-import java.sql.PreparedStatement;
-
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
-import com.zaxxer.hikari.HikariDataSource;
+import com._4.javasocketchat.entity.*;
+import com._4.javasocketchat.mapper.UserMapper;
+import com._4.javasocketchat.redis.UserRedis;
 
 @Repository
 public class UserRepository {
-    private final HikariDataSource dataSource;
+    private final UserMapper mapper;
+    private final UserRedis redis;
 
-    public UserRepository(HikariDataSource dataSource) {
-        this.dataSource = dataSource;
+    public UserRepository(UserMapper mapper, UserRedis redis) {
+        this.mapper = mapper;
+        this.redis = redis;
+    }
+    
+    // 增
+    public void addUsercredential(UserCredentialEntity credential) {
+        if( isExist(credential.getId()) ) {
+            return;
+        }
+        mapper.addUsercredential(credential);
+        redis.addUsercredential(credential);
+    }
+    
+    public void addUserinfo(UserInfoEntity info) {
+        mapper.addUserinfo(info);
     }
 
-    public boolean isExist(String userAccount) throws Exception {
-        try(var conn = dataSource.getConnection();
-            PreparedStatement ps = conn.prepareStatement(SQLContents.isExist());){
-            ps.setString(1, userAccount);
-            var rs = ps.executeQuery();
-            if(rs.next()) {
-                int count = rs.getInt(1);
-                return count > 0;
-            }
-        }
-        return false;
+    // 删
+
+    // 改
+
+    // 查
+    @Cacheable(value = "password", key = "'user:password:' + #id")
+    public String getHashPassword(int id) {
+        String password = mapper.getHashPassword(id);
+        return password;
+    }
+    // 应该查redis的
+    public boolean isExist(int id) {
+        return mapper.isExist(id) == 1;
+    }
+    // 这里后期要改成依据邮箱，登陆相关全部都要改为是依据邮箱的，用户名只是展示用的
+    @Cacheable(value = "userID", key = "'user:id:' + #username")
+    public int getID(String username) {
+        return mapper.getID(username);
     }
 
-    public String getHashPassword(String userAccount) throws Exception {
-        try(var conn = dataSource.getConnection();
-            PreparedStatement ps = conn.prepareStatement(SQLContents.getHashPassword());){
-            ps.setString(1, userAccount);
-            var rs = ps.executeQuery();
-            if(rs.next()) {
-                String hashPassword = rs.getString("password_hash");
-                return hashPassword;
-            }else {
-                throw new Exception("User not found");
-            }
-        }catch(Exception e){
-            throw new Exception("Failed to get hash password",e);
-        }
+    public UserInfoEntity getUserInfoByID(int id) {
+        return mapper.getUserInfoByID(id);
     }
 
-    public void add(UserEntity userEntity) throws Exception {
-        try(var conn = dataSource.getConnection();
-            PreparedStatement ps = conn.prepareStatement(SQLContents.addUser());){
-            ps.setString(1, userEntity.getUserName());
-            ps.setString(2, userEntity.getUserAccount());
-            ps.setString(3, userEntity.getHashPassword());
-            var rs = ps.executeUpdate();
-            if(rs == 0) throw new Exception("User already exists"); 
-        }catch(Exception e){
-            throw new Exception("Failed to add new user",e);
-        }
+    public List<UserInfoEntity> getFriendList(int userId) {
+        return mapper.getFriendList(userId);
+    }
+
+    public List<GroupsEntity> getGroupList(int userId) {
+        return mapper.getGroupList(userId);
     }
 }
